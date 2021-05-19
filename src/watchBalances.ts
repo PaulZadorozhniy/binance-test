@@ -8,10 +8,10 @@ import {
 } from './binanceSdk/interfaces';
 import { config } from './config';
 
-const binanceApi = new BinanceApi(config.binance.testnet.baseApiUrl);
-const binanceWs = new BinanceWs(config.binance.testnet.baseWsUrl, binanceApi);
-
 export async function watchNonZeroAccountBalances() {
+  const binanceApi = new BinanceApi(config.binance.testnet.baseApiUrl);
+  const binanceWs = new BinanceWs(config.binance.testnet.baseWsUrl, binanceApi);
+
   const account: Account = await binanceApi.getAccount();
 
   const nonZeroAccountBalances = new Map<string, AccountBalance>();
@@ -23,7 +23,6 @@ export async function watchNonZeroAccountBalances() {
   console.log('nonZeroAccountBalances', nonZeroAccountBalances);
 
   const listeningkey = await binanceApi.getUserDataListeningkey();
-
   await binanceWs.createSocket(listeningkey);
 
   binanceWs.on(

@@ -16,19 +16,16 @@ export class BinanceApi {
   }
 
   public async getAccount(): Promise<Account> {
-    const timestamp: number = new Date().getTime();
+    const timestamp: number = Date.now();
     const queryString: string = `timestamp=${timestamp}`;
 
-    const hash: string = this.signature(queryString);
-
-    console.log('signature', hash);
-    console.log('timestamp', timestamp);
+    const signature: string = this.createSignature(queryString);
 
     const account = await axios.get<Account>(
       `${this.baseApiUrl}/api/v3/account`,
       {
         headers: this.headers,
-        params: { timestamp, signature: hash },
+        params: { timestamp, signature },
       }
     );
 
@@ -66,7 +63,7 @@ export class BinanceApi {
     return account.data;
   }
 
-  private signature(queryString: string): string {
+  private createSignature(queryString: string): string {
     return createHmac('sha256', this.secretKey)
       .update(queryString)
       .digest('hex');

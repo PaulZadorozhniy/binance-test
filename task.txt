@@ -14,6 +14,3 @@ Tasks:
   - Open 10 *@trade websockets for the 10 pairs with the highest volume in the last 24h on the SPOT exchange (mainnet)
     - Determinate the 10 pairs dynamically (no hard-coded pairs)
     - Measure event time => client receive time latency and log (min/mean/max) to console every 1 minute
-
-
-// Fix subscription logic for 1st tasl

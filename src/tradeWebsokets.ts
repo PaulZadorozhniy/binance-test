@@ -1,15 +1,13 @@
-import WebSocket from 'ws';
-
 import { BinanceApi } from './binanceSdk/binance-api';
 import { BinanceWs } from './binanceSdk/binance-ws';
 import { TradeEvent } from './binanceSdk/interfaces';
 import { config } from './config';
 import { calculateMean, compareVolume } from './utils';
 
-const binanceApi = new BinanceApi(config.binance.testnet.baseApiUrl);
-const binanceWs = new BinanceWs(config.binance.testnet.baseWsUrl, binanceApi);
-
 export async function watchTradeWebsokets() {
+  const binanceApi = new BinanceApi(config.binance.mainnet.baseApiUrl);
+  const binanceWs = new BinanceWs(config.binance.mainnet.baseWsUrl, binanceApi);
+
   const result = await binanceApi.getTickerDailyChangeStatistics();
 
   const sortedVolume = result.sort(compareVolume);
@@ -21,7 +19,6 @@ export async function watchTradeWebsokets() {
   let allLatencies: number[] = [];
 
   hight10byVolume.forEach((ticker) => {
-    console.log(`${ticker.symbol}@trade`);
     binanceWs.createSocket(`${ticker.symbol}@trade`);
   });
 
@@ -29,8 +26,6 @@ export async function watchTradeWebsokets() {
     const now = Date.now();
     const latency = now - event.E;
 
-    console.log('event', event.s);
-    console.log('latency', latency);
     allLatencies.push(latency);
 
     if (!minLatency || minLatency > latency) {
@@ -47,5 +42,5 @@ export async function watchTradeWebsokets() {
       maxLatency,
       meanLatency: calculateMean(allLatencies),
     });
-  }, 1000 * 5);
+  }, 1000 * 60);
 }
